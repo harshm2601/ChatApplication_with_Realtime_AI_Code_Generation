@@ -92,3 +92,20 @@ export const addUserToProject = async ({ projectId, users, userId }) => {
     // $each: Allows adding multiple users at once
     return updatedProject
 }
+
+export const getProjectById = async ({ projectId }) => {
+
+    if(!projectId){
+        throw new Error("ProjectId is required");
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(projectId)){
+        throw new Error("Invalid ProjectId");
+    }
+
+    const project = await projectModel.findOne({
+        _id : projectId
+    }).populate('users')
+
+    return project;
+}
