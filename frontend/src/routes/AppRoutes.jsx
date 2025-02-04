@@ -8,7 +8,7 @@ import Project from '../screens/Project';
 const AppRoutes = () => {
     return (
         <BrowserRouter>
-            <Routes>w
+            <Routes>
                 <Route path='/' element={<Home/>}/>
                 <Route path='/login' element={<Login/>}/>
                 <Route path='/register' element={<Register/>}/>

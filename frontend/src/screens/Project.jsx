@@ -79,14 +79,14 @@ const Project = () => {
                 <small 
                     className="opacity-60"
                 >example@gmail.com</small>
-                <p className="text-sm">How are youssssssssssssssssssssssssss ssssssssssssssssssssssssssss ??</p>
+                <p className="text-sm">How are you??</p>
             </div>
 
             <div className="ml-auto message max-w-56 flex flex-col p-3 bg-slate-50 w-fit rounded-md">
                 <small 
                     className="opacity-60"
                 >example@gmail.com</small>
-                <p className="text-sm">How are you aaaaaabbbbbbbbb  ssssssssssssssssssssssssssss??</p>
+                <p className="text-sm">I am fine</p>
             </div>
 
           </div>
