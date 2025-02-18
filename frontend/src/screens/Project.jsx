@@ -13,7 +13,7 @@ const Project = () => {
   const location = useLocation();
   // console.log(location);
 
-  const [isSidePanelOpen, setIsSIdePanelOpen] = useState(false);
+  const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState([]);
   const [project, setProject] = useState(location.state.project);
@@ -56,7 +56,7 @@ const Project = () => {
     
     sendMessage("project-message", {
       message,
-      sender: user,
+      sender: user
     });
 
     appendOutgoingMessage(message)
@@ -69,7 +69,7 @@ const Project = () => {
 
     initializeSocket(project._id);
 
-    reciveMessage("project-message", (data) => {
+    reciveMessage("project-message", data => {
       console.log(data);
       appendIncomingMessage(data);
     });
@@ -131,12 +131,12 @@ const Project = () => {
       <section className="left relative flex flex-col h-screen min-w-80 bg-slate-300">
         <header className="flex justify-between items-center p-2 px-4 w-full bg-slate-100 absolute top-0">
           <button className="flex" onClick={() => setIsModalOpen(true)}>
-            <i class="ri-user-add-line mr-2"></i>
+            <i className="ri-user-add-line mr-2"></i>
             <p>Add collaborate</p>
           </button>
 
           <button
-            onClick={() => setIsSIdePanelOpen(!isSidePanelOpen)}
+            onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}
             className="p-2"
           >
             <i className="ri-group-fill"></i>
@@ -178,20 +178,20 @@ const Project = () => {
         </div>
 
         <div
-          className={`sidePanel flex flex-col gap-2 w-full h-full bg-slate-100 absolute transition-all ${
-            isSidePanelOpen ? "translate-x-0" : "-translate-x-full"
-          } top-0`}
+          className={`sidePanel flex flex-col gap-2 w-full h-full bg-slate-100 absolute transition-all 
+            ${ isSidePanelOpen ? "translate-x-0" : "-translate-x-full"} top-0`}
         >
           <header className="flex justify-between items-center p-4 px-4 bg-slate-300 ">
             <h1 className="text-xl font-semibold">Collaborators</h1>
-            <button onClick={() => setIsSIdePanelOpen(!isSidePanelOpen)}>
-              <i class="ri-close-large-fill"></i>
+            <button onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}>
+              <i className="ri-close-large-fill"></i>
             </button>
           </header>
 
           <div className="users flex flex-col gap-2">
             {project.users &&
-              project.users.map((user) => (
+              project.users.map((user) => {
+                return (
                 <div
                   key={user._id}
                   className="user cursor-pointer hover:bg-slate-200 p-2 flex gap-2 items-center"
@@ -201,7 +201,8 @@ const Project = () => {
                   </div>
                   <h1 className="font-semibold text-lg">{user.email}</h1>
                 </div>
-              ))}
+                )
+              })}
           </div>
         </div>
       </section>
