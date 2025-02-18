@@ -8,6 +8,8 @@ import {
 } from "../config/socket.js";
 import { UserContext } from "../context/user.context.jsx";
 import { use } from "react";
+import Markdown from 'markdown-to-jsx'
+
 
 const Project = () => {
   const location = useLocation();
@@ -37,6 +39,8 @@ const Project = () => {
   };
 
   function addCollaborators() {
+    console.log("Add Collaborators");
+    
     axios
       .put("/projects/add-user", {
         projectId: location.state.project._id,
@@ -100,10 +104,19 @@ const Project = () => {
 
     const message = document.createElement('div');
     message.classList.add('message', 'max-w-56', 'flex', 'flex-col', 'p-3', 'bg-slate-50', 'w-fit', 'rounded-md');
-    message.innerHTML =  `
-      <small class='opacity-60'>${messageObject.sender.email}</small>
+    
+    if(messageObject.sender._id == 'ai'){
+
+      const markdown = (<Markdown>{messageObject.message}</Markdown>)
+      message.innerHTML = `
+          <small class='opacity-60 text-xs'>${messageObject.sender.email}</small>
+          <p class='text-sm'>${markdown}</p>`
+    }else{
+      message.innerHTML =  `
+      <small class='opacity-60 text-xs'>${messageObject.sender.email}</small>
       <p class='text-sm'>${messageObject.message}</p>
       `
+      }
       messageBox.appendChild(message)
       scrollToBottom()
   }
