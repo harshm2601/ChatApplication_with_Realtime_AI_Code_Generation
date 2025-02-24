@@ -51,7 +51,6 @@ const Project = () => {
   };
 
   function addCollaborators() {
-    console.log("Add Collaborators");
 
     axios
       .put("/projects/add-user", {
@@ -68,7 +67,7 @@ const Project = () => {
   }
 
   const send = () => {
-    console.log(user);
+    if (!message.trim()) return; // Don't send empty messages
 
     sendMessage("project-message", {
       message,
@@ -76,13 +75,34 @@ const Project = () => {
     });
 
     setMessages((prevMessages) => {
-      const newMessages = [...prevMessages, { sender: user, message }];
+      // Ensure we're working with an array
+      const currentMessages = Array.isArray(prevMessages) ? prevMessages : [];
+      const newMessages = [...currentMessages, { sender: user, message }];
       setTimeout(scrollToBottom, 0);
       return newMessages;
     });
 
     setMessage("");
   };
+
+  function WriteAiMessage(message){
+    
+    const messageObject = JSON.parse(message);
+
+    return (
+
+    <div className="overflow-auto bg-slate-950 text-white rounded-sm p-2">
+    <Markdown
+      children={messageObject.text}
+      options={{
+        overrides: {
+          code: SyntaxHighlightedCode,
+        },
+      }}
+    />
+  </div>
+    )
+  }
 
   useEffect(() => {
     // console.log(location.state.project);
@@ -117,6 +137,8 @@ const Project = () => {
       });
   }, []);
 
+ 
+
   function scrollToBottom() {
     messageBox.current.scrollTop = messageBox.current.scrollHeight;
   }
@@ -124,10 +146,17 @@ const Project = () => {
   return (
     <main className="h-screen w-screen flex">
       <section className="left relative flex flex-col h-screen min-w-96 bg-slate-300">
-        <header className="flex justify-between items-center p-2 px-4 w-full bg-slate-100 absolute top-0">
-          <button className="flex" onClick={() => setIsModalOpen(true)}>
+        <header className="flex justify-between items-center p-2 px-4 w-full bg-slate-100 absolute top-0 z-10">
+          <button 
+            className="flex items-center cursor-pointer hover:bg-slate-200 p-2 rounded" 
+            onClick={() => {
+              console.log("Add collaborator button clicked");
+              setIsModalOpen(true);
+            }}
+            type="button"
+          >
             <i className="ri-user-add-line mr-2"></i>
-            <p>Add collaborate</p>
+            <p>Add collaborator</p>
           </button>
 
           <button
@@ -143,7 +172,7 @@ const Project = () => {
             ref={messageBox}
             className="message-box p-1 flex-grow flex flex-col gap-2 overflow-auto max-h-full scrollbar-hide"
           >
-            {messages.map((msg, index) => (
+            {Array.isArray(messages) && messages.map((msg, index) => (
               <div
                 key={index}
                 className={`${
@@ -152,20 +181,10 @@ const Project = () => {
               >
                 <small className="opacity-65 text-xs">{msg.sender.email}</small>
                 <p className="text-sm">
-                  {msg.sender._id === "ai" ? (
-                    <div className="overflow-auto bg-slate-950 text-white rounded-sm p-2">
-                      <Markdown
-                        children={msg.message}
-                        options={{
-                          overrides: {
-                            code: SyntaxHighlightedCode,
-                          },
-                        }}
-                      />
-                    </div>
-                  ) : (
-                    msg.message
-                  )}
+                  {msg.sender._id === "ai" ? 
+                    WriteAiMessage(msg.message)  
+                    : msg.message
+                  }
                 </p>
               </div>
             ))}
