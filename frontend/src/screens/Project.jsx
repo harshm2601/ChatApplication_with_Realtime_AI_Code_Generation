@@ -36,6 +36,19 @@ const Project = () => {
 
   const [users, setUsers] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [fileTree, setFileTree] = useState({
+    "app.js": {
+      content: `const express = require(express);`,
+    },
+    "package.json": {
+      content: `{
+        "name": "temp-server",
+      }`,
+    },
+  });
+
+  const [currentFile, SetCurrentFile] = useState(null);
+  const [openFile, setOpenFile] = useState([]);
 
   const handleUserClick = (id) => {
     setSelectedUserId((prevSelectedUserId) => {
@@ -51,7 +64,6 @@ const Project = () => {
   };
 
   function addCollaborators() {
-
     axios
       .put("/projects/add-user", {
         projectId: location.state.project._id,
@@ -85,23 +97,21 @@ const Project = () => {
     setMessage("");
   };
 
-  function WriteAiMessage(message){
-    
+  function WriteAiMessage(message) {
     const messageObject = JSON.parse(message);
 
     return (
-
-    <div className="overflow-auto bg-slate-950 text-white rounded-sm p-2">
-    <Markdown
-      children={messageObject.text}
-      options={{
-        overrides: {
-          code: SyntaxHighlightedCode,
-        },
-      }}
-    />
-  </div>
-    )
+      <div className="overflow-auto bg-slate-950 text-white rounded-sm p-2">
+        <Markdown
+          children={messageObject.text}
+          options={{
+            overrides: {
+              code: SyntaxHighlightedCode,
+            },
+          }}
+        />
+      </div>
+    );
   }
 
   useEffect(() => {
@@ -137,8 +147,6 @@ const Project = () => {
       });
   }, []);
 
- 
-
   function scrollToBottom() {
     messageBox.current.scrollTop = messageBox.current.scrollHeight;
   }
@@ -147,8 +155,8 @@ const Project = () => {
     <main className="h-screen w-screen flex">
       <section className="left relative flex flex-col h-screen min-w-96 bg-slate-300">
         <header className="flex justify-between items-center p-2 px-4 w-full bg-slate-100 absolute top-0 z-10">
-          <button 
-            className="flex items-center cursor-pointer hover:bg-slate-200 p-2 rounded" 
+          <button
+            className="flex items-center cursor-pointer hover:bg-slate-200 p-2 rounded"
             onClick={() => {
               console.log("Add collaborator button clicked");
               setIsModalOpen(true);
@@ -172,22 +180,26 @@ const Project = () => {
             ref={messageBox}
             className="message-box p-1 flex-grow flex flex-col gap-2 overflow-auto max-h-full scrollbar-hide"
           >
-            {Array.isArray(messages) && messages.map((msg, index) => (
-              <div
-                key={index}
-                className={`${
-                  msg.sender._id === "ai" ? "max-w-80" : "max-w-54" 
-                } ${msg.sender._id == user._id.toString() && 'ml-auto' }  message flex flex-col p-2 bg-slate-50 w-fit rounded-md`}
-              >
-                <small className="opacity-65 text-xs">{msg.sender.email}</small>
-                <p className="text-sm">
-                  {msg.sender._id === "ai" ? 
-                    WriteAiMessage(msg.message)  
-                    : msg.message
-                  }
-                </p>
-              </div>
-            ))}
+            {Array.isArray(messages) &&
+              messages.map((msg, index) => (
+                <div
+                  key={index}
+                  className={`${
+                    msg.sender._id === "ai" ? "max-w-80" : "max-w-54"
+                  } ${
+                    msg.sender._id == user._id.toString() && "ml-auto"
+                  }  message flex flex-col p-2 bg-slate-50 w-fit rounded-md`}
+                >
+                  <small className="opacity-65 text-xs">
+                    {msg.sender.email}
+                  </small>
+                  <p className="text-sm">
+                    {msg.sender._id === "ai"
+                      ? WriteAiMessage(msg.message)
+                      : msg.message}
+                  </p>
+                </div>
+              ))}
           </div>
           <div className="inputField bg-slate-100 flex items-center justify-left">
             <div>
@@ -244,6 +256,56 @@ const Project = () => {
               })}
           </div>
         </div>
+      </section>
+
+      <section className="right bg-red-50 flex-grow h-full flex">
+        <div className="explorer h-full max-w-64 min-w-52 bg-slate-200">
+          <div className="file-tree w-full">
+            {Object.keys(fileTree).map((file, index) => (
+              <button
+                onClick={() => {
+                  SetCurrentFile(file);
+                  setOpenFile([ ...new Set([...openFile, file]) ]);
+                }}
+                className="tree-element cursor-pointer px-4 p-2 flex items-center gap-2 bg-slate-300 w-full rounded-md"
+              >
+                <p className="font-semibold text-lg">{file}</p>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {currentFile && (
+          <div className="code-editor flex flex-grow flex-col h-full">
+            <div className="top flex">
+              {
+                openFile.map((file,index) => (
+                  <button
+                    onClick={() => SetCurrentFile(file)}
+                    className={`open-file cursor-pointer p-2 px-4 flex items-center gap-2 bg-slate-300 w-fit ${currentFile === file ? 'bg-slate-400' : ''}`}
+                    ><p className="font-semibold text-lg">{file}</p>
+                  </button>
+                ))
+              }
+            </div>
+            <div className="bottom flex flex-grow">
+              {fileTree[currentFile] && (
+                <textarea
+                  value={fileTree[currentFile].content}
+                  onChange={(e) => {
+                    setFileTree({
+                      ...fileTree,
+                      [currentFile]: {
+                        content: e.target.value,
+                      },
+                    });
+                  }}
+                  className="w-full h-full p-4 bg-slate-50 outline-none border-none"
+                ></textarea>
+              )}
+            </div>
+          </div>
+        )}
       </section>
 
       {isModalOpen && (
