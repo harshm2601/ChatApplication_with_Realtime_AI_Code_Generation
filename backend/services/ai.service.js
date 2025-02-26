@@ -53,8 +53,9 @@ response: {
         }
       }
       ",
-
-      "buildCommand": {
+    }
+  }
+    "buildCommand": {
         mainItem: "npm",
         commands: ["install"]
       },
@@ -63,9 +64,6 @@ response: {
         mainItem: "node",
         commands: ["app.js"]
       }
-
-    }
-  }
 }
   </example>  
 

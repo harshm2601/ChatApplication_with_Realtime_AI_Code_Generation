@@ -36,16 +36,7 @@ const Project = () => {
 
   const [users, setUsers] = useState([]);
   const [messages, setMessages] = useState([]);
-  const [fileTree, setFileTree] = useState({
-    "app.js": {
-      content: `const express = require(express);`,
-    },
-    "package.json": {
-      content: `{
-        "name": "temp-server",
-      }`,
-    },
-  });
+  const [fileTree, setFileTree] = useState({});
 
   const [currentFile, SetCurrentFile] = useState(null);
   const [openFile, setOpenFile] = useState([]);
@@ -90,7 +81,7 @@ const Project = () => {
       // Ensure we're working with an array
       const currentMessages = Array.isArray(prevMessages) ? prevMessages : [];
       const newMessages = [...currentMessages, { sender: user, message }];
-      setTimeout(scrollToBottom, 0);
+      // setTimeout(scrollToBottom, 0);
       return newMessages;
     });
 
@@ -120,11 +111,14 @@ const Project = () => {
     initializeSocket(project._id);
 
     reciveMessage("project-message", (data) => {
-      setMessages((prevMessages) => {
-        const newMessages = [...prevMessages, data];
-        setTimeout(scrollToBottom, 0);
-        return newMessages;
-      });
+      
+      const message = JSON.parse(data.message);
+
+      if(message.fileTree){
+        setFileTree(message.fileTree);
+      }
+      
+      setMessages((prevMessages) => [ ...prevMessages, data]);
     });
 
     axios
@@ -147,9 +141,9 @@ const Project = () => {
       });
   }, []);
 
-  function scrollToBottom() {
-    messageBox.current.scrollTop = messageBox.current.scrollHeight;
-  }
+  // function scrollToBottom() {
+  //   messageBox.current.scrollTop = messageBox.current.scrollHeight;
+  // }
 
   return (
     <main className="h-screen w-screen flex">
