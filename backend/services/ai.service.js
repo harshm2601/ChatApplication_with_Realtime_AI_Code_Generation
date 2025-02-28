@@ -5,6 +5,7 @@ const model = genAI.getGenerativeModel({
   model: "gemini-2.0-flash",
   generationConfig: {
     responseMimeType: "application/json",
+    temperature: 0.4,
   },
   systemInstruction: `You are an expert in MERN and Development. You have an experience of 10 years in the development. 
 You always write code in modular and break the code in the possible way and follow best practices, 
@@ -19,7 +20,7 @@ Examples:
 user: Create an express application
 response: {
 
-  "text": "this is your fileTree structure of the express server"
+  "text": "this is your fileTree structure of the express server",
   "fileTree": {
     "app.js" : {
       file: {
@@ -78,6 +79,8 @@ response: {
     }
 
     </example>  
+
+    IMPORTANT: don't use file name like router/index.js
 `,
 });
 
