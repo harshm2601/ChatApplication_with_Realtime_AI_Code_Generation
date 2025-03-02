@@ -145,6 +145,7 @@ const Project = () => {
       })
       .catch((err) => {
         console.log(err.response.data);
+        setFileTree(res.data.project.fileTree)
       });
 
     axios
@@ -156,6 +157,17 @@ const Project = () => {
         console.log(err.response.data);
       });
   }, []);
+
+  function saveFileTree(ft){
+    axios.put('/projects/update-file-tree', {
+      projectId: project._id,
+      fileTree: ft
+    }).then(res => {
+      console.log(res.data);
+    }).catch(err => {
+      console.log(err);
+    })
+  }
 
   // function scrollToBottom() {
   //   messageBox.current.scrollTop = messageBox.current.scrollHeight;
@@ -350,13 +362,16 @@ const Project = () => {
                       suppressContentEditableWarning
                       onBlur={(e) => {
                         const updatedContent = e.target.innerText;
-                        setFileTree(prevFileTree => ({
-                          ...prevFileTree,
-                          [currentFile]: {
-                            ...prevFileTree[currentFile],
-                            contents: updatedContent
+                        const ft = {
+                          ...fileTree,
+                          [ currentFile ]: {
+                            file: {
+                              contents: updatedContent
+                            }
                           }
-                        }));
+                        }
+                        setFileTree(ft)
+                        saveFileTree(ft)
                       }}
                       dangerouslySetInnerHTML={{ 
                         __html: hljs.highlight(
